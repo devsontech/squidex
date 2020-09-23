@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Squidex.Infrastructure.Translations;
+using Squidex.Text;
 
 namespace Squidex.Infrastructure.Validation
 {
@@ -17,7 +18,7 @@ namespace Squidex.Infrastructure.Validation
         {
             var property = T.Get($"common.{name.ToCamelCase()}", name);
 
-            return T.Get("aspnet_annotations_AbsoluteUrl", new { property });
+            return T.Get("annotations_AbsoluteUrl", new { property });
         }
 
         public override bool IsValid(object value)

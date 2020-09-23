@@ -23,20 +23,20 @@ namespace Squidex.Infrastructure.UsageTracking
             this.usageTracker = usageTracker;
         }
 
-        public async Task<long> GetMonthCallsAsync(string key, DateTime date)
+        public async Task<long> GetMonthCallsAsync(string key, DateTime date, string? category)
         {
             var apiKey = GetKey(key);
 
-            var counters = await usageTracker.GetForMonthAsync(apiKey, date);
+            var counters = await usageTracker.GetForMonthAsync(apiKey, date, category);
 
             return counters.GetInt64(CounterTotalCalls);
         }
 
-        public async Task<long> GetMonthBytesAsync(string key, DateTime date)
+        public async Task<long> GetMonthBytesAsync(string key, DateTime date, string? category)
         {
             var apiKey = GetKey(key);
 
-            var counters = await usageTracker.GetForMonthAsync(apiKey, date);
+            var counters = await usageTracker.GetForMonthAsync(apiKey, date, category);
 
             return counters.GetInt64(CounterTotalBytes);
         }
@@ -90,7 +90,14 @@ namespace Squidex.Infrastructure.UsageTracking
 
             var summaryElapsedAvg = CalculateAverage(summaryCalls, summaryElapsed);
 
-            var summary = new ApiStatsSummary(summaryCalls, summaryElapsedAvg, summaryBytes);
+            var monthStats = await usageTracker.GetForMonthAsync(apiKey, DateTime.Today, null);
+
+            var summary = new ApiStatsSummary(
+                summaryElapsedAvg,
+                summaryCalls,
+                summaryBytes,
+                monthStats.GetInt64(CounterTotalCalls),
+                monthStats.GetInt64(CounterTotalBytes));
 
             return (summary, details);
         }

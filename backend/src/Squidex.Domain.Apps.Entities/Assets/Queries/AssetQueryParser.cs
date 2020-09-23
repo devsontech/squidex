@@ -21,6 +21,7 @@ using Squidex.Infrastructure.Queries.Json;
 using Squidex.Infrastructure.Queries.OData;
 using Squidex.Infrastructure.Translations;
 using Squidex.Infrastructure.Validation;
+using Squidex.Text;
 
 namespace Squidex.Domain.Apps.Entities.Assets.Queries
 {
@@ -39,13 +40,15 @@ namespace Squidex.Domain.Apps.Entities.Assets.Queries
             Guard.NotNull(tagService, nameof(tagService));
 
             this.jsonSerializer = jsonSerializer;
-            this.options = options.Value;
             this.tagService = tagService;
+
+            this.options = options.Value;
         }
 
         public virtual async ValueTask<ClrQuery> ParseQueryAsync(Context context, Q q)
         {
             Guard.NotNull(context, nameof(context));
+            Guard.NotNull(q, nameof(q));
 
             using (Profiler.TraceMethod<AssetQueryParser>())
             {
@@ -133,6 +136,7 @@ namespace Squidex.Domain.Apps.Entities.Assets.Queries
             AddProperty(nameof(IAssetEntity.FileName), JsonObjectType.String);
             AddProperty(nameof(IAssetEntity.FileSize), JsonObjectType.Integer);
             AddProperty(nameof(IAssetEntity.FileVersion), JsonObjectType.Integer);
+            AddProperty(nameof(IAssetEntity.IsProtected), JsonObjectType.Boolean);
             AddProperty(nameof(IAssetEntity.LastModified), JsonObjectType.String, JsonFormatStrings.DateTime);
             AddProperty(nameof(IAssetEntity.LastModifiedBy), JsonObjectType.String);
             AddProperty(nameof(IAssetEntity.Metadata), JsonObjectType.None);
@@ -168,6 +172,7 @@ namespace Squidex.Domain.Apps.Entities.Assets.Queries
             AddProperty(nameof(IAssetEntity.CreatedBy), EdmPrimitiveTypeKind.String);
             AddProperty(nameof(IAssetEntity.FileHash), EdmPrimitiveTypeKind.String);
             AddProperty(nameof(IAssetEntity.FileName), EdmPrimitiveTypeKind.String);
+            AddProperty(nameof(IAssetEntity.IsProtected), EdmPrimitiveTypeKind.Boolean);
             AddProperty(nameof(IAssetEntity.FileSize), EdmPrimitiveTypeKind.Int64);
             AddProperty(nameof(IAssetEntity.FileVersion), EdmPrimitiveTypeKind.Int64);
             AddProperty(nameof(IAssetEntity.LastModified), EdmPrimitiveTypeKind.DateTimeOffset);

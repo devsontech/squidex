@@ -14,17 +14,18 @@ using Squidex.Infrastructure.TestHelpers;
 
 namespace Squidex.Infrastructure.EventSourcing
 {
-    public sealed class MongoEventStoreFixture : IDisposable
+    public abstract class MongoEventStoreFixture : IDisposable
     {
-        private readonly IMongoClient mongoClient = new MongoClient("mongodb://localhost");
+        private readonly IMongoClient mongoClient;
         private readonly IMongoDatabase mongoDatabase;
         private readonly IEventNotifier notifier = A.Fake<IEventNotifier>();
 
         public MongoEventStore EventStore { get; }
 
-        public MongoEventStoreFixture()
+        protected MongoEventStoreFixture(string connectionString)
         {
-            mongoDatabase = mongoClient.GetDatabase("EventStoreTest");
+            mongoClient = new MongoClient(connectionString);
+            mongoDatabase = mongoClient.GetDatabase($"EventStoreTest");
 
             BsonJsonConvention.Register(JsonSerializer.Create(JsonHelper.DefaultSettings()));
 
@@ -32,9 +33,30 @@ namespace Squidex.Infrastructure.EventSourcing
             EventStore.InitializeAsync().Wait();
         }
 
-        public void Dispose()
+        public void Cleanup()
         {
             mongoClient.DropDatabase("EventStoreTest");
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+    }
+
+    public sealed class MongoEventStoreDirectFixture : MongoEventStoreFixture
+    {
+        public MongoEventStoreDirectFixture()
+            : base("mongodb://localhost:27019")
+        {
+        }
+    }
+
+    public sealed class MongoEventStoreReplicaSetFixture : MongoEventStoreFixture
+    {
+        public MongoEventStoreReplicaSetFixture()
+            : base("mongodb://localhost:27017")
+        {
         }
     }
 }

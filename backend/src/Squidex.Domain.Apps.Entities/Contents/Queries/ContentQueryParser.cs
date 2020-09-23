@@ -29,6 +29,7 @@ using Squidex.Infrastructure.Queries.Json;
 using Squidex.Infrastructure.Queries.OData;
 using Squidex.Infrastructure.Translations;
 using Squidex.Infrastructure.Validation;
+using Squidex.Text;
 
 namespace Squidex.Domain.Apps.Entities.Contents.Queries
 {
@@ -41,7 +42,11 @@ namespace Squidex.Domain.Apps.Entities.Contents.Queries
         public ContentQueryParser(IMemoryCache cache, IJsonSerializer jsonSerializer, IOptions<ContentOptions> options)
             : base(cache)
         {
+            Guard.NotNull(jsonSerializer, nameof(jsonSerializer));
+            Guard.NotNull(options, nameof(options));
+
             this.jsonSerializer = jsonSerializer;
+
             this.options = options.Value;
         }
 
@@ -49,6 +54,7 @@ namespace Squidex.Domain.Apps.Entities.Contents.Queries
         {
             Guard.NotNull(context, nameof(context));
             Guard.NotNull(schema, nameof(schema));
+            Guard.NotNull(q, nameof(q));
 
             using (Profiler.TraceMethod<ContentQueryParser>())
             {
@@ -202,6 +208,7 @@ namespace Squidex.Domain.Apps.Entities.Contents.Queries
             entityType.AddStructuralProperty(nameof(IContentEntity.CreatedBy).ToCamelCase(), EdmPrimitiveTypeKind.String);
             entityType.AddStructuralProperty(nameof(IContentEntity.LastModified).ToCamelCase(), EdmPrimitiveTypeKind.DateTimeOffset);
             entityType.AddStructuralProperty(nameof(IContentEntity.LastModifiedBy).ToCamelCase(), EdmPrimitiveTypeKind.String);
+            entityType.AddStructuralProperty(nameof(IContentEntity.NewStatus).ToCamelCase(), EdmPrimitiveTypeKind.String);
             entityType.AddStructuralProperty(nameof(IContentEntity.Status).ToCamelCase(), EdmPrimitiveTypeKind.String);
             entityType.AddStructuralProperty(nameof(IContentEntity.Version).ToCamelCase(), EdmPrimitiveTypeKind.Int32);
             entityType.AddStructuralProperty(nameof(IContentEntity.Data).ToCamelCase(), new EdmComplexTypeReference(schemaType, false));

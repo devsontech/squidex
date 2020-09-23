@@ -105,7 +105,7 @@ namespace Squidex.Domain.Apps.Entities.Contents
 
             patched = patch.MergeInto(data);
 
-            var context = new ContentOperationContext(appProvider, Enumerable.Repeat(new DefaultValidatorsFactory(), 1), scriptEngine);
+            var context = new ContentOperationContext(appProvider, Enumerable.Repeat(new DefaultValidatorsFactory(), 1), scriptEngine, A.Fake<ISemanticLog>());
 
             sut = new ContentDomainObject(Store, contentWorkflow, context, A.Dummy<ISemanticLog>());
             sut.Setup(Id);
@@ -436,7 +436,7 @@ namespace Squidex.Domain.Apps.Entities.Contents
             await ExecuteCreateAsync();
             await ExecuteChangeStatusAsync(Status.Archived, dueTime);
 
-            var command = new ChangeContentStatus { Status = Status.Archived, JobId = sut.Snapshot.ScheduleJob!.Id };
+            var command = new ChangeContentStatus { Status = Status.Archived, StatusJobId = sut.Snapshot.ScheduleJob!.Id };
 
             A.CallTo(() => contentWorkflow.CanMoveToAsync(A<IContentEntity>._, Status.Draft, Status.Archived, User))
                 .Returns(true);
@@ -464,7 +464,7 @@ namespace Squidex.Domain.Apps.Entities.Contents
             await ExecuteCreateAsync();
             await ExecuteChangeStatusAsync(Status.Published, dueTime);
 
-            var command = new ChangeContentStatus { Status = Status.Published, JobId = sut.Snapshot.ScheduleJob!.Id };
+            var command = new ChangeContentStatus { Status = Status.Published, StatusJobId = sut.Snapshot.ScheduleJob!.Id };
 
             A.CallTo(() => contentWorkflow.CanMoveToAsync(A<IContentEntity>._, Status.Draft, Status.Published, User))
                 .Returns(false);

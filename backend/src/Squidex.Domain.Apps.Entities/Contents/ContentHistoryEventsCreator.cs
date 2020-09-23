@@ -11,7 +11,6 @@ using Squidex.Domain.Apps.Events;
 using Squidex.Domain.Apps.Events.Contents;
 using Squidex.Infrastructure.EventSourcing;
 using Squidex.Infrastructure.Reflection;
-using Squidex.Infrastructure.Translations;
 
 namespace Squidex.Domain.Apps.Entities.Contents
 {
@@ -21,28 +20,28 @@ namespace Squidex.Domain.Apps.Entities.Contents
             : base(typeNameRegistry)
         {
             AddEventMessage<ContentCreated>(
-                T.Get("history.contents.created"));
+                "history.contents.created");
 
             AddEventMessage<ContentUpdated>(
-                T.Get("history.contents.updated"));
+                "history.contents.updated");
 
             AddEventMessage<ContentDeleted>(
-                T.Get("history.contents.deleted"));
+                "history.contents.deleted");
 
             AddEventMessage<ContentDraftCreated>(
-                T.Get("history.contents.draftCreated"));
+                "history.contents.draftCreated");
 
             AddEventMessage<ContentDraftDeleted>(
-                T.Get("history.contents.draftDeleted"));
+                "history.contents.draftDeleted");
 
             AddEventMessage<ContentSchedulingCancelled>(
-                T.Get("history.contents.scheduleFailed"));
+                "history.contents.scheduleFailed");
 
             AddEventMessage<ContentStatusChanged>(
-                T.Get("history.statusChanged"));
+                "history.statusChanged");
 
             AddEventMessage<ContentStatusScheduled>(
-                T.Get("history.contents.scheduleCompleted"));
+                "history.contents.scheduleCompleted");
         }
 
         protected override Task<HistoryEvent?> CreateEventCoreAsync(Envelope<IEvent> @event)

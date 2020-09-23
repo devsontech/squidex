@@ -26,6 +26,13 @@ namespace Squidex.Infrastructure.EventSourcing
             get { return Database.GetCollection<BsonDocument>(CollectionName()); }
         }
 
+        public IMongoCollection<MongoEventCommit> TypedCollection
+        {
+            get { return Collection; }
+        }
+
+        public bool IsReplicaSet { get; }
+
         public MongoEventStore(IMongoDatabase database, IEventNotifier notifier)
             : base(database)
         {

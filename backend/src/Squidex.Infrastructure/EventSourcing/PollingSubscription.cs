@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using System;
-using System.Threading.Tasks;
+using Squidex.Infrastructure.Tasks;
 using Squidex.Infrastructure.Timers;
 
 namespace Squidex.Infrastructure.EventSourcing
@@ -37,10 +37,7 @@ namespace Squidex.Infrastructure.EventSourcing
                 }
                 catch (Exception ex)
                 {
-                    if (!ex.Is<OperationCanceledException>())
-                    {
-                        await eventSubscriber.OnErrorAsync(this, ex);
-                    }
+                    await eventSubscriber.OnErrorAsync(this, ex);
                 }
             });
         }
@@ -50,9 +47,9 @@ namespace Squidex.Infrastructure.EventSourcing
             timer.SkipCurrentDelay();
         }
 
-        public Task StopAsync()
+        public void Unsubscribe()
         {
-            return timer.StopAsync();
+            timer.StopAsync().Forget();
         }
     }
 }

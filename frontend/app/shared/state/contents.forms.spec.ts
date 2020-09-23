@@ -8,6 +8,7 @@
 // tslint:disable: max-line-length
 
 import { AbstractControl, FormArray } from '@angular/forms';
+import { DateHelper } from '@app/framework';
 import { AppLanguageDto, createProperties, DateTime, EditContentForm, FieldDefaultValue, FieldFormatter, FieldPropertiesDto, FieldsValidators, getContentValue, HtmlValue, LanguageDto, MetaFields, NestedFieldDto, RootFieldDto, SchemaDetailsDto, SchemaPropertiesDto, Version } from '@app/shared/internal';
 import { FieldRule } from './../services/schemas.service';
 import { FieldArrayForm } from './contents.forms';
@@ -20,6 +21,8 @@ const {
     creation,
     creator
 } = TestValues;
+
+const now = DateTime.parseISO('2017-10-12T16:30:10Z');
 
 describe('SchemaDetailsDto', () => {
     const field1 = createField({ properties: createProperties('Array'), id: 1 });
@@ -232,8 +235,11 @@ describe('BooleanField', () => {
 });
 
 describe('DateTimeField', () => {
-    const now = DateTime.parseISO('2017-10-12T16:30:10Z');
     const field = createField({ properties: createProperties('DateTime', { editor: 'DateTime', isRequired: true }) });
+
+    beforeEach(() => {
+        DateHelper.setlocale(null);
+    });
 
     it('should create validators', () => {
         expect(FieldsValidators.create(field, false).length).toBe(1);
@@ -250,19 +256,25 @@ describe('DateTimeField', () => {
     it('should format old format to date', () => {
         const dateField = createField({ properties: createProperties('DateTime', { editor: 'Date' }) });
 
-        expect(FieldFormatter.format(dateField, '2017-12-12')).toBe('2017-12-12');
+        expect(FieldFormatter.format(dateField, '2017-12-12')).toBe('12/12/2017');
     });
 
-    it('should format to date', () => {
+    it('should format datetime to date', () => {
         const dateField = createField({ properties: createProperties('DateTime', { editor: 'Date' }) });
 
-        expect(FieldFormatter.format(dateField, '2017-12-12T16:00:00Z')).toBe('2017-12-12');
+        expect(FieldFormatter.format(dateField, '2017-12-12T16:00:00Z')).toBe('12/12/2017');
+    });
+
+    it('should format date to date', () => {
+        const dateField = createField({ properties: createProperties('DateTime', { editor: 'Date' }) });
+
+        expect(FieldFormatter.format(dateField, '2017-12-12T00:00:00Z')).toBe('12/12/2017');
     });
 
     it('should format to date time', () => {
         const field2 = createField({ properties: createProperties('DateTime', { editor: 'DateTime' }) });
 
-        expect(FieldFormatter.format(field2, '2017-12-12T16:00:00Z')).toBe('2017-12-12 16:00:00');
+        expect(FieldFormatter.format(field2, '2017-12-12T16:00:00Z')).toBe('12/12/2017, 4:00:00 PM');
     });
 
     it('should return default for DateFieldProperties', () => {

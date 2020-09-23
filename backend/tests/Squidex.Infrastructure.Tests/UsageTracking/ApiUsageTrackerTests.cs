@@ -18,6 +18,7 @@ namespace Squidex.Infrastructure.UsageTracking
     {
         private readonly IUsageTracker usageTracker = A.Fake<IUsageTracker>();
         private readonly string key = Guid.NewGuid().ToString();
+        private readonly string category = Guid.NewGuid().ToString();
         private readonly DateTime date = DateTime.Today;
         private readonly ApiUsageTracker sut;
 
@@ -55,10 +56,10 @@ namespace Squidex.Infrastructure.UsageTracking
                 [ApiUsageTracker.CounterTotalCalls] = 4
             };
 
-            A.CallTo(() => usageTracker.GetForMonthAsync($"{key}_API", date))
+            A.CallTo(() => usageTracker.GetForMonthAsync($"{key}_API", date, category))
                 .Returns(counters);
 
-            var result = await sut.GetMonthCallsAsync(key, date);
+            var result = await sut.GetMonthCallsAsync(key, date, category);
 
             Assert.Equal(4, result);
         }
@@ -71,10 +72,10 @@ namespace Squidex.Infrastructure.UsageTracking
                 [ApiUsageTracker.CounterTotalBytes] = 14
             };
 
-            A.CallTo(() => usageTracker.GetForMonthAsync($"{key}_API", date))
+            A.CallTo(() => usageTracker.GetForMonthAsync($"{key}_API", date, category))
                 .Returns(counters);
 
-            var result = await sut.GetMonthBytesAsync(key, date);
+            var result = await sut.GetMonthBytesAsync(key, date, category);
 
             Assert.Equal(14, result);
         }
@@ -105,6 +106,15 @@ namespace Squidex.Infrastructure.UsageTracking
                 }
             };
 
+            var forMonth = new Counters
+            {
+                [ApiUsageTracker.CounterTotalCalls] = 120,
+                [ApiUsageTracker.CounterTotalBytes] = 400
+            };
+
+            A.CallTo(() => usageTracker.GetForMonthAsync($"{key}_API", DateTime.Today, null))
+                .Returns(forMonth);
+
             A.CallTo(() => usageTracker.QueryAsync($"{key}_API", dateFrom, dateTo))
                 .Returns(counters);
 
@@ -130,7 +140,7 @@ namespace Squidex.Infrastructure.UsageTracking
                 }
             });
 
-            summary.Should().BeEquivalentTo(new ApiStatsSummary(15, 20, 3728));
+            summary.Should().BeEquivalentTo(new ApiStatsSummary(20, 15, 3728, 120, 400));
         }
 
         private static Counters Counters(long calls, long elapsed, long bytes)

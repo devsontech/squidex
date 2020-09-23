@@ -5,9 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Squidex.Domain.Apps.Entities.Apps.Commands;
 using Squidex.Infrastructure.Reflection;
+using Squidex.Infrastructure.Validation;
 
 namespace Squidex.Areas.Api.Controllers.Plans.Models
 {
@@ -16,12 +17,16 @@ namespace Squidex.Areas.Api.Controllers.Plans.Models
         /// <summary>
         /// The new plan id.
         /// </summary>
-        [Required]
+        [LocalizedRequired]
         public string PlanId { get; set; }
 
-        public ChangePlan ToCommand()
+        public ChangePlan ToCommand(HttpContext httpContext)
         {
-            return SimpleMapper.Map(this, new ChangePlan());
+            var result = SimpleMapper.Map(this, new ChangePlan());
+
+            result.Referer = httpContext.Request.Headers["Referer"];
+
+            return result;
         }
     }
 }

@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Squidex.Domain.Apps.Entities.Apps.Commands;
 using Squidex.Infrastructure.Reflection;
+using Squidex.Infrastructure.Validation;
 
 namespace Squidex.Areas.Api.Controllers.Apps.Models
 {
@@ -16,7 +16,7 @@ namespace Squidex.Areas.Api.Controllers.Apps.Models
         /// <summary>
         /// The new display name of the client.
         /// </summary>
-        [StringLength(20)]
+        [LocalizedStringLength(20)]
         public string? Name { get; set; }
 
         /// <summary>
@@ -28,6 +28,16 @@ namespace Squidex.Areas.Api.Controllers.Apps.Models
         /// True to allow anonymous access without an access token for this client.
         /// </summary>
         public bool? AllowAnonymous { get; set; }
+
+        /// <summary>
+        /// The number of allowed api calls per month for this client.
+        /// </summary>
+        public long? ApiCallsLimit { get; set; }
+
+        /// <summary>
+        /// The number of allowed api traffic bytes per month for this client.
+        /// </summary>
+        public long? ApiTrafficLimit { get; set; }
 
         public UpdateClient ToCommand(string clientId)
         {
