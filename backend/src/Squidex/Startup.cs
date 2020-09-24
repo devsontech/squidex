@@ -37,6 +37,7 @@ namespace Squidex
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient();
+            services.AddLettuceEncrypt();
             services.AddMemoryCache();
             services.AddNonBreakingSameSiteCookies();
 
